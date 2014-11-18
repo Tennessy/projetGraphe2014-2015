@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 /**
@@ -6,38 +7,88 @@ import java.util.ArrayList;
 public class main {
 
     public static void main (String [] args){
-        ArrayList<sommet> adj;
+        ArrayList<Sommet> adj;
+
+        Sommet[] sl = null;
+        try {
+            sl = IOGraphe.read("test.graphe");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        Integer[] color =  coloration(sl);
+
+        /*for(int i=0; i<sl.length; i++){
+            System.out.println(i + " : " + color[i]);
+        }*/
     }
 
-    public ArrayList<Integer> coloration(ArrayList <sommet> adj, int nbSommet){
-        ArrayList<Integer> sommetColor= new ArrayList<Integer>();
+    public static Integer[] coloration(Sommet[] sommets){
+        int nbSommet = 0;
+        for(int i=0; i<sommets.length; i++){
+            if(sommets[i] != null)
+                nbSommet++;
+        }
+
+        //System.out.println("nbSommet : " + nbSommet);
+        /*Integer[] sommetColor= new Integer[nbSommet];
         for(int i=0; i<nbSommet; i++){
-            sommetColor.add(i, -1);
+            sommetColor[i] = -1;
         }
         if (!adj.isEmpty()){
-         ArrayList<sommet> adj2= (ArrayList <sommet>) adj.clone();
+         ArrayList<Sommet> adj2= (ArrayList <Sommet>) adj.clone();
          adj2.remove(0);
-         sommetColor=(ArrayList<Integer>) coloration(adj2, nbSommet).clone();
+         sommetColor=coloration(adj2, nbSommet);
 
-         sommetColor.get(adj.get(0).getNumero()) = rechCouleur(adj.get(0).voisins, sommetColor);
+         sommetColor[adj.get(0).getNumero()] = rechCouleur(adj.get(0).voisins, sommetColor);
         }
+        return sommetColor;*/
+        int x = 0;
+        Integer[] sommetColor= new Integer[sommets.length];
+
+        if(nbSommet == 1)
+            for(int i=0; i<sommets.length; i++){
+                sommetColor[i] = -1;
+            }
+
+        while(x<sommets.length && sommets[x] == null)
+            x++;
+
+        Sommet[] sommetsTemp = new Sommet[sommets.length];
+        for(int i=0; i<sommets.length; i++){
+            //System.out.print(sommets[i] + " ");
+            sommetsTemp[i] = sommets[i];
+        }
+        //System.out.println();
+        sommetsTemp[x] = null;
+        //System.out.println("X = " + x);
+
+        if(nbSommet>1)
+            sommetColor = coloration(sommetsTemp);
+
+        try {
+            sommetColor[x] = rechCouleur(sommets[x].getVoisins(), sommetColor);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return sommetColor;
     }
 
-    public int rechCouleur(ArrayList<Integer> voisins,  ArrayList<Integer> sommetColor){
+    public static int rechCouleur(ArrayList<Integer> voisins,  Integer[] sommetColor) throws Exception{
         boolean [] color = new boolean[5];
         for (int j=0; j<5; j++){
             color[j]=true;
         }
         for(int i : voisins){
-            if(sommetColor.get(i) != -1)
-                color[sommetColor.get(i)]=false;
-            }
-        for(int i =0; i<5; i++){
-            if(color[i]=true){
+            if(sommetColor[i] != -1)
+                color[sommetColor[i]]=false;
+        }
+        for(int i =0; i<5; i++) {
+            if (color[i] == true) {
                 return i;
             }
         }
-        return -1;
+        throw new Exception("-1");
+
     }
 }
