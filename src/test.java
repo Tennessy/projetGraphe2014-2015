@@ -15,7 +15,7 @@ public class test {
             e.printStackTrace();
         }
 
-        color =  main.coloration(sl, sl);
+        color =  main.coloration(sl, sl, sl.length);
 
         verif(color, sl);
 
@@ -31,6 +31,6 @@ public class test {
                 }
             }
         }
-        System.out.println("All good");
+        System.out.println("Done");
     }
 }

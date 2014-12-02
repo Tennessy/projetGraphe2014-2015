@@ -22,7 +22,7 @@ public class Sommet {
         this.numero = num;
         this.posx=0;
         this.posy=0;
-        this.voisins=(ArrayList<Integer>)voisins.clone();
+        this.voisins=voisins;
         this.active=true;
     }
 

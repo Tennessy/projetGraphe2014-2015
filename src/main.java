@@ -1,6 +1,7 @@
 import java.io.FileNotFoundException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by amelie on 30/10/14.
@@ -17,7 +18,7 @@ public class main {
             e.printStackTrace();
         }
 
-        Integer[] color =  coloration(sl, sl);
+        Integer[] color =  coloration(sl, sl, sl.length);
        /* Integer [] sommetColor = new Integer [6];
         sommetColor[0]=-1;
         sommetColor[1]=0;
@@ -39,15 +40,7 @@ public class main {
 
     }
 
-    public static Integer[] coloration(Sommet[] sommets, Sommet[] sommetsInit){
-
-
-
-        int nbSommet = 0;
-        for(int i=0; i<sommets.length; i++){
-            if(sommets[i].isActive())
-                nbSommet++;
-        }
+    public static Integer[] coloration(Sommet[] sommets, Sommet[] sommetsInit, int nbSommetActif){
 
         //System.out.println("nbSommet : " + nbSommet);
         /*Integer[] sommetColor= new Integer[nbSommet];
@@ -65,7 +58,7 @@ public class main {
         int x = 0;
         Integer[] sommetColor= new Integer[sommets.length];
 
-        if(nbSommet == 1){
+        if(nbSommetActif == 1){
             for(int i=0; i<sommets.length; i++) {
                 sommetColor[i] = -1;
 
@@ -74,14 +67,25 @@ public class main {
         }
 
         boolean trouve = false;
+        Iterator<Integer> it;
         while(x<sommets.length && !trouve){
-            if(sommets[x].isActive()){
+            Sommet xs = sommets[x];
+            if(xs.isActive()){
                 int nbVoisin = 0;
-                ArrayList<Integer> voisins = sommets[x].getVoisins();
-                for(int sv : voisins){
-                    if(sommets[sv].isActive())
+                ArrayList<Integer> voisins = xs.getVoisins();
+                it = voisins.iterator();
+                /*for(int sv : voisins){
+                    Sommet v = sommets[sv];
+                    if(v.isActive())
+                        nbVoisin++;
+                }*/
+
+                while(it.hasNext()){
+                    Sommet v = sommets[it.next()];
+                    if(v.isActive())
                         nbVoisin++;
                 }
+
                 if(nbVoisin>5)
                     x++;
                 else{
@@ -92,7 +96,7 @@ public class main {
                 x++;
             }
         }
-//        System.out.println("X=" + x);
+
 
        /* Sommet[] sommetsTemp = new Sommet[sommets.length];
 
@@ -106,12 +110,10 @@ public class main {
         System.out.println();
         sommetsTemp[x] = null;*/
         sommets[x].setActive(false);
-        if(nbSommet>1)
-            sommetColor = coloration(sommets, sommetsInit);
-
+        if(nbSommetActif>1)
+            sommetColor = coloration(sommets, sommetsInit, nbSommetActif-1);
 
         int couleur = rechCouleur(sommets[x].getVoisins(), sommetColor);
-
         sommets[x].setActive(true);
 
         if(couleur != -1){
@@ -119,11 +121,8 @@ public class main {
         }
 
         else{
-            ArrayList<Integer> sommetFaits = new ArrayList<Integer>();
-            while(sommetColor[x]==-1) {
-                sommetColor = inverserCouleur(sommets[x], sommetsInit, sommetColor, sommetFaits);
+                sommetColor = inverserCouleur(sommets[x], sommetsInit, sommetColor);
                 sommetColor[x] = rechCouleur(sommets[x].getVoisins(), sommetColor);
-            }
         }
 
         return sommetColor;
@@ -147,7 +146,7 @@ public class main {
 
     }
 
-    public static Integer [] inverserCouleur(Sommet x, Sommet[] sommets, Integer[] sommetColor, ArrayList<Integer> sommetFaits) {
+    public static Integer [] inverserCouleur(Sommet x, Sommet[] sommets, Integer[] sommetColor) {
         Sommet premier=null;
         for(int som : x.getVoisins()){
             if (som > x.getNumero() && sommetColor[som]!=-1 && sommets[som].isActive()){
@@ -226,13 +225,31 @@ public class main {
             }
 
         }
-        for (int sommet : compConnexe) {
-            if (sommetColor[sommet] == couleurPremier) {
-                sommetColor[sommet] = couleurSecond;
-            } else {
-                sommetColor[sommet] = couleurPremier;
+        System.out.println("++++++++ " + x.getNumero() + " ++++++++");
+        if(compConnexe.size() == 1){
+            System.out.print("Unique : ");
+            System.out.print(compConnexe.get(0) + " Ancienne couleur : " + sommetColor[compConnexe.get(0)]);
+            sommetColor[compConnexe.get(0)] = (sommetColor[compConnexe.get(0)]+1) % 5;
+            System.out.print(" Nouvelle couleur : " + sommetColor[compConnexe.get(0)]);
+            System.out.println();
+        }
+        else{
+            for (int sommet : compConnexe) {
+
+                System.out.print(sommet + " Ancienne couleur : " + sommetColor[sommet]);
+                if (sommetColor[sommet] == couleurPremier) {
+                    sommetColor[sommet] = couleurSecond;
+                    System.out.print(" Nouvelle couleur : " + couleurSecond);
+                } else {
+                    sommetColor[sommet] = couleurPremier;
+                    System.out.print(" Nouvelle couleur : " + couleurPremier);
+                }
+                System.out.println();
+
             }
         }
+
+        System.out.println("++++++++++++++++++++++");
 
         return sommetColor;
     }
