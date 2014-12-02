@@ -109,20 +109,31 @@ public class main {
         }
         System.out.println();
         sommetsTemp[x] = null;*/
+
+
         sommets[x].setActive(false);
         if(nbSommetActif>1)
             sommetColor = coloration(sommets, sommetsInit, nbSommetActif-1);
 
-        int couleur = rechCouleur(sommets[x].getVoisins(), sommetColor);
+        if(x == 299){
+            System.out.println("299! " + sommets[796].isActive());
+        }
+
+        if(x == 796)
+            System.out.println("796!");
         sommets[x].setActive(true);
+        int couleur = rechCouleur(sommets[x].getVoisins(), sommetColor);
+
 
         if(couleur != -1){
             sommetColor[x]=couleur;
+            sommets[x].setActive(true);
         }
 
         else{
-                sommetColor = inverserCouleur(sommets[x], sommetsInit, sommetColor);
-                sommetColor[x] = rechCouleur(sommets[x].getVoisins(), sommetColor);
+            sommetColor = inverserCouleur(sommets[x], sommetsInit, sommetColor);
+            sommetColor[x] = rechCouleur(sommets[x].getVoisins(), sommetColor);
+            sommets[x].setActive(true);
         }
 
         return sommetColor;
@@ -137,6 +148,7 @@ public class main {
             if(sommetColor[i] != -1)
                 color[sommetColor[i]]=false;
         }
+
         for(int i =0; i<5; i++) {
             if (color[i] == true) {
                 return i;
@@ -149,7 +161,7 @@ public class main {
     public static Integer [] inverserCouleur(Sommet x, Sommet[] sommets, Integer[] sommetColor) {
         Sommet premier=null;
         for(int som : x.getVoisins()){
-            if (som > x.getNumero() && sommetColor[som]!=-1 && sommets[som].isActive()){
+            if (som != x.getNumero() && sommetColor[som]!=-1 && sommets[som].isActive()){
                 premier = sommets[som];
             }
         }
@@ -186,19 +198,20 @@ public class main {
         compConnexe.add(premier.getNumero());
         parcours.add(premier.getNumero());
         boolean boucle = false;
-        int sommetBoucle = -1;
+        ArrayList<Integer> sommetsBoucle = new ArrayList<Integer>();
 
         while (!parcours.isEmpty()) {
             boucle = false;
             int sActu = parcours.get(0);
             for (int sVoisin : sommets[sActu].getVoisins()) {
-                if (sommets[sVoisin].isActive() && (sommetColor[sVoisin] == couleurPremier || sommetColor[sVoisin] == couleurSecond) && visite[sVoisin] == false && (sVoisin != premier.getNumero()) && !compConnexe.contains(sVoisin)) {
+                if (sVoisin != x.getNumero() && (sommets[sVoisin].isActive()) && (sommetColor[sVoisin] == couleurPremier || sommetColor[sVoisin] == couleurSecond) && visite[sVoisin] == false && (sVoisin != premier.getNumero()) && !compConnexe.contains(sVoisin)) {
                     parcours.add(sVoisin);
                     compConnexe.add(sVoisin);
                     visite[sVoisin]=true;
-                    if (voisinsX.contains(sVoisin)) {
+                    if (voisinsX.contains(sVoisin) || sommetsBoucle.contains(sVoisin)) {
                         boucle = true;
-                        sommetBoucle = sVoisin;
+                        //sommetsBoucle.add(sVoisin);
+                        sommetsBoucle.add(second.getNumero());
                     }
                 }
 
@@ -208,29 +221,57 @@ public class main {
                 parcours.clear();
                 compConnexe.clear();
                 int newS = -1;
-                for (int ns : voisinsX) {
-                    if (ns != sommetBoucle && ns != premier.getNumero() && sommets[ns].isActive()) {
+                for(int ns : premier.getVoisins()){
+                    if (!sommetsBoucle.contains(ns) && sommets[ns].isActive() && ns != x.getNumero() && sommetColor[ns] != couleurSecond) {
                         newS = ns;
                     }
                 }
-                premier = sommets[newS];
-                couleurPremier = sommetColor[newS];
-                second = sommets[sommets[sommets[newS].getVoisins().get(0)].getVoisins().get(0)];
-                couleurSecond = sommetColor[second.getNumero()];
-                parcours.add(newS);
-                compConnexe.add(newS);
+
+
+                if(newS == -1){
+                    sommetsBoucle.add(premier.getNumero());
+                    for (int ns : voisinsX) {
+                        if (!sommetsBoucle.contains(ns) && ns != premier.getNumero() && sommets[ns].isActive() && ns != x.getNumero()) {
+                            newS = ns;
+                        }
+                    }
+                    premier = sommets[newS];
+                    couleurPremier = sommetColor[newS];
+                    int i=0;
+                    while(i<premier.getVoisins().size() && sommets[premier.getVoisins().get(i)].isActive() && premier.getVoisins().get(i) != x.getNumero()){
+                        second = sommets[premier.getVoisins().get(i)];
+                        i++;
+                    }
+
+                    couleurSecond = sommetColor[second.getNumero()];
+
+                }
+                else{
+                    second = sommets[newS];
+                    couleurSecond = sommetColor[second.getNumero()];
+                }
+                parcours.add(premier.getNumero());
+                compConnexe.add(premier.getNumero());
                 for(int voisVisit =0; voisVisit < visite.length; voisVisit++){
                     visite[voisVisit] = false;
                 }
+
             }
 
         }
+
         System.out.println("++++++++ " + x.getNumero() + " ++++++++");
         if(compConnexe.size() == 1){
             System.out.print("Unique : ");
             System.out.print(compConnexe.get(0) + " Ancienne couleur : " + sommetColor[compConnexe.get(0)]);
             sommetColor[compConnexe.get(0)] = (sommetColor[compConnexe.get(0)]+1) % 5;
+
             System.out.print(" Nouvelle couleur : " + sommetColor[compConnexe.get(0)]);
+            System.out.print(" | ");
+            for(int sv : sommets[compConnexe.get(0)].getVoisins()){
+                if(sommets[sv].isActive())
+                    System.out.print(" " + sv);
+            }
             System.out.println();
         }
         else{
