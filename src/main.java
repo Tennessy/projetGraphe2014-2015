@@ -45,7 +45,7 @@ public class main {
 
         int nbSommet = 0;
         for(int i=0; i<sommets.length; i++){
-            if(sommets[i] != null)
+            if(sommets[i].isActive())
                 nbSommet++;
         }
 
@@ -65,16 +65,36 @@ public class main {
         int x = 0;
         Integer[] sommetColor= new Integer[sommets.length];
 
-        if(nbSommet == 1)
-            for(int i=0; i<sommets.length; i++){
+        if(nbSommet == 1){
+            for(int i=0; i<sommets.length; i++) {
                 sommetColor[i] = -1;
+
             }
 
-        while((x<sommets.length && sommets[x] == null) || (x<sommets.length && sommets[x]!=null && sommets[x].getVoisins().size()>5))
-            x++;
+        }
 
-        System.out.println("X=" + x);
-        Sommet[] sommetsTemp = new Sommet[sommets.length];
+        boolean trouve = false;
+        while(x<sommets.length && !trouve){
+            if(sommets[x].isActive()){
+                int nbVoisin = 0;
+                ArrayList<Integer> voisins = sommets[x].getVoisins();
+                for(int sv : voisins){
+                    if(sommets[sv].isActive())
+                        nbVoisin++;
+                }
+                if(nbVoisin>5)
+                    x++;
+                else{
+                    trouve = true;
+                }
+            }
+            else{
+                x++;
+            }
+        }
+//        System.out.println("X=" + x);
+
+       /* Sommet[] sommetsTemp = new Sommet[sommets.length];
 
         for(int i=0; i<sommets.length; i++){
             //System.out.print(sommets[i] + " ");
@@ -83,18 +103,16 @@ public class main {
                 sommetsTemp[i].getVoisins().remove((Object)x);
             }
         }
-        //System.out.println();
-        sommetsTemp[x] = null;
-
-
-        System.out.println("nbSommet : " + nbSommet);
+        System.out.println();
+        sommetsTemp[x] = null;*/
+        sommets[x].setActive(false);
         if(nbSommet>1)
-            sommetColor = coloration(sommetsTemp, sommetsInit);
+            sommetColor = coloration(sommets, sommetsInit);
 
 
         int couleur = rechCouleur(sommets[x].getVoisins(), sommetColor);
 
-
+        sommets[x].setActive(true);
 
         if(couleur != -1){
             sommetColor[x]=couleur;
@@ -132,7 +150,7 @@ public class main {
     public static Integer [] inverserCouleur(Sommet x, Sommet[] sommets, Integer[] sommetColor, ArrayList<Integer> sommetFaits) {
         Sommet premier=null;
         for(int som : x.getVoisins()){
-            if (som > x.getNumero() && sommetColor[som]!=-1){
+            if (som > x.getNumero() && sommetColor[som]!=-1 && sommets[som].isActive()){
                 premier = sommets[som];
             }
         }
@@ -151,7 +169,7 @@ public class main {
         Sommet second = sommets[premier.getVoisins().get(0)];
         int couleurSecond = sommetColor[second.getNumero()];
         for(int i : premier.getVoisins()) {
-            if(sommetColor[i]!=-1 && i!=x.getNumero()) {
+            if(sommetColor[i]!=-1 && i!=x.getNumero() && sommets[i].isActive()) {
                 second = sommets[i];
                 couleurSecond = sommetColor[second.getNumero()];
             }
@@ -175,7 +193,7 @@ public class main {
             boucle = false;
             int sActu = parcours.get(0);
             for (int sVoisin : sommets[sActu].getVoisins()) {
-                if ((sommetColor[sVoisin] == couleurPremier || sommetColor[sVoisin] == couleurSecond) && visite[sVoisin] == false && (sVoisin != premier.getNumero()) && !compConnexe.contains(sVoisin)) {
+                if (sommets[sVoisin].isActive() && (sommetColor[sVoisin] == couleurPremier || sommetColor[sVoisin] == couleurSecond) && visite[sVoisin] == false && (sVoisin != premier.getNumero()) && !compConnexe.contains(sVoisin)) {
                     parcours.add(sVoisin);
                     compConnexe.add(sVoisin);
                     visite[sVoisin]=true;
@@ -192,7 +210,7 @@ public class main {
                 compConnexe.clear();
                 int newS = -1;
                 for (int ns : voisinsX) {
-                    if (ns != sommetBoucle && ns != premier.getNumero()) {
+                    if (ns != sommetBoucle && ns != premier.getNumero() && sommets[ns].isActive()) {
                         newS = ns;
                     }
                 }
@@ -215,6 +233,7 @@ public class main {
                 sommetColor[sommet] = couleurPremier;
             }
         }
+
         return sommetColor;
     }
     /*public static Integer[] autreCouleur(ArrayList<Integer> voisins, Integer[] sommetColor, Sommet[] sommets ){

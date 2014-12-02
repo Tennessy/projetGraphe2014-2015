@@ -8,12 +8,14 @@ public class Sommet {
     int posx;
     int posy;
     ArrayList<Integer> voisins;
+    private boolean active;
 
     public Sommet(){
         this.numero = -1;
         this.posx = 0;
         this.posy = 0;
         this.voisins = new ArrayList<Integer>();
+        this.active=true;
     }
 
     public Sommet(int num, ArrayList<Integer> voisins){
@@ -21,6 +23,15 @@ public class Sommet {
         this.posx=0;
         this.posy=0;
         this.voisins=(ArrayList<Integer>)voisins.clone();
+        this.active=true;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public int getNumero() {

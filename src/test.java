@@ -24,7 +24,7 @@ public class test {
     public static void verif(Integer[] color, Sommet[] sl){
         for(Sommet s : sl){
             for(int i : s.getVoisins()) {
-                if (color[i] == color[s.getNumero()]){
+                if (color[i] == color[s.getNumero()] || color[i]==-1){
 
                     System.out.println(s.getNumero() + "(" + color[s.getNumero()] + ") | " + i + "(" + color[i] + ")");
 
