@@ -73,7 +73,7 @@ public class main {
         while((x<sommets.length && sommets[x] == null) || (x<sommets.length && sommets[x]!=null && sommets[x].getVoisins().size()>5))
             x++;
 
-
+        System.out.println("X=" + x);
         Sommet[] sommetsTemp = new Sommet[sommets.length];
 
         for(int i=0; i<sommets.length; i++){
@@ -85,16 +85,21 @@ public class main {
         }
         //System.out.println();
         sommetsTemp[x] = null;
-        //System.out.println("X = " + x);
 
+
+        System.out.println("nbSommet : " + nbSommet);
         if(nbSommet>1)
             sommetColor = coloration(sommetsTemp, sommetsInit);
 
+
         int couleur = rechCouleur(sommets[x].getVoisins(), sommetColor);
+
+
 
         if(couleur != -1){
             sommetColor[x]=couleur;
         }
+
         else{
             ArrayList<Integer> sommetFaits = new ArrayList<Integer>();
             while(sommetColor[x]==-1) {
@@ -191,11 +196,15 @@ public class main {
                         newS = ns;
                     }
                 }
+                premier = sommets[newS];
                 couleurPremier = sommetColor[newS];
                 second = sommets[sommets[sommets[newS].getVoisins().get(0)].getVoisins().get(0)];
                 couleurSecond = sommetColor[second.getNumero()];
                 parcours.add(newS);
                 compConnexe.add(newS);
+                for(int voisVisit =0; voisVisit < visite.length; voisVisit++){
+                    visite[voisVisit] = false;
+                }
             }
 
         }
