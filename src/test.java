@@ -1,3 +1,6 @@
+import Graphe.IOGraphe;
+import Graphe.Sommet;
+
 import java.io.FileNotFoundException;
 
 /**

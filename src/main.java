@@ -1,5 +1,8 @@
+import Graphe.IOGraphe;
+import Graphe.Sommet;
+import view.Fenetre;
+
 import java.io.FileNotFoundException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -13,7 +16,7 @@ public class main {
 
         Sommet[] sl = null;
         try {
-            sl = IOGraphe.read("test.graphe");
+            sl = IOGraphe.read("test.graphe", "test.coords");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -35,6 +38,8 @@ public class main {
             System.out.println(i + " : " + color[i]);
         }
 
+        Fenetre fen = new Fenetre(sl, color);
+
 
 
 
@@ -48,7 +53,7 @@ public class main {
             sommetColor[i] = -1;
         }
         if (!adj.isEmpty()){
-         ArrayList<Sommet> adj2= (ArrayList <Sommet>) adj.clone();
+         ArrayList<Graphe.Sommet> adj2= (ArrayList <Graphe.Sommet>) adj.clone();
          adj2.remove(0);
          sommetColor=coloration(adj2, nbSommet);
 
@@ -75,7 +80,7 @@ public class main {
                 ArrayList<Integer> voisins = xs.getVoisins();
                 it = voisins.iterator();
                 /*for(int sv : voisins){
-                    Sommet v = sommets[sv];
+                    Graphe.Sommet v = sommets[sv];
                     if(v.isActive())
                         nbVoisin++;
                 }*/
@@ -98,11 +103,11 @@ public class main {
         }
 
 
-       /* Sommet[] sommetsTemp = new Sommet[sommets.length];
+       /* Graphe.Sommet[] sommetsTemp = new Graphe.Sommet[sommets.length];
 
         for(int i=0; i<sommets.length; i++){
             //System.out.print(sommets[i] + " ");
-            sommetsTemp[i] = sommets[i] != null?new Sommet(sommets[i].getNumero(),sommets[i].getVoisins()):null;
+            sommetsTemp[i] = sommets[i] != null?new Graphe.Sommet(sommets[i].getNumero(),sommets[i].getVoisins()):null;
             if(sommetsTemp[i]!=null){
                 sommetsTemp[i].getVoisins().remove((Object)x);
             }
@@ -294,7 +299,7 @@ public class main {
 
         return sommetColor;
     }
-    /*public static Integer[] autreCouleur(ArrayList<Integer> voisins, Integer[] sommetColor, Sommet[] sommets ){
+    /*public static Integer[] autreCouleur(ArrayList<Integer> voisins, Integer[] sommetColor, Graphe.Sommet[] sommets ){
 
 
         for(int i : voisins) {

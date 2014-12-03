@@ -1,3 +1,5 @@
+package Graphe;
+
 import java.util.ArrayList;
 
 /**
@@ -64,5 +66,10 @@ public class Sommet {
 
     public ArrayList<Integer> getVoisins() {
         return voisins;
+    }
+
+    public void setPosition(int x, int y){
+        this.posx = x;
+        this.posy = y;
     }
 }
