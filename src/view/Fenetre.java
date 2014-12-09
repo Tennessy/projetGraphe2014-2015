@@ -1,7 +1,7 @@
 package view;
 
 import javax.swing.*;
-import Graphe.*;
+import graphe.*;
 
 import java.awt.*;
 

@@ -1,5 +1,5 @@
-import Graphe.IOGraphe;
-import Graphe.Sommet;
+import graphe.IOGraphe;
+import graphe.Sommet;
 import view.Fenetre;
 
 import java.io.FileNotFoundException;
@@ -12,65 +12,22 @@ import java.util.Iterator;
 public class main {
 
     public static void main (String [] args){
-        ArrayList<Sommet> adj;
-
-        Sommet[] sl = null;
-        try {
-            sl = IOGraphe.read("test.graphe", "test.coords");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        Integer[] color =  coloration(sl, sl, sl.length);
-       /* Integer [] sommetColor = new Integer [6];
-        sommetColor[0]=-1;
-        sommetColor[1]=0;
-        sommetColor[2]=1;
-        sommetColor[3]=2;
-        sommetColor[4]=3;
-        sommetColor[5]=4;
-
-
-        sommetColor=autreCouleur(sl[0].getVoisins(), sommetColor, sl);
-        sommetColor[0] = rechCouleur(sl[0].getVoisins(), sommetColor);*/
-
-        for(int i=0; i<sl.length; i++){
-            System.out.println(i + " : " + color[i]);
-        }
-
-        Fenetre fen = new Fenetre(sl, color);
-
-
-
-
+        traitementArgs(args);
     }
 
+
     public static Integer[] coloration(Sommet[] sommets, Sommet[] sommetsInit, int nbSommetActif){
-
-        //System.out.println("nbSommet : " + nbSommet);
-        /*Integer[] sommetColor= new Integer[nbSommet];
-        for(int i=0; i<nbSommet; i++){
-            sommetColor[i] = -1;
-        }
-        if (!adj.isEmpty()){
-         ArrayList<Graphe.Sommet> adj2= (ArrayList <Graphe.Sommet>) adj.clone();
-         adj2.remove(0);
-         sommetColor=coloration(adj2, nbSommet);
-
-         sommetColor[adj.get(0).getNumero()] = rechCouleur(adj.get(0).voisins, sommetColor);
-        }
-        return sommetColor;*/
         int x = 0;
         Integer[] sommetColor= new Integer[sommets.length];
 
+        //Initialisation des couleurs des sommets à vide
         if(nbSommetActif == 1){
             for(int i=0; i<sommets.length; i++) {
                 sommetColor[i] = -1;
-
             }
-
         }
 
+        //Recherche d'un sommet ayant au plus 5 voisins
         boolean trouve = false;
         Iterator<Integer> it;
         while(x<sommets.length && !trouve){
@@ -79,11 +36,6 @@ public class main {
                 int nbVoisin = 0;
                 ArrayList<Integer> voisins = xs.getVoisins();
                 it = voisins.iterator();
-                /*for(int sv : voisins){
-                    Graphe.Sommet v = sommets[sv];
-                    if(v.isActive())
-                        nbVoisin++;
-                }*/
 
                 while(it.hasNext()){
                     Sommet v = sommets[it.next()];
@@ -102,39 +54,25 @@ public class main {
             }
         }
 
-
-       /* Graphe.Sommet[] sommetsTemp = new Graphe.Sommet[sommets.length];
-
-        for(int i=0; i<sommets.length; i++){
-            //System.out.print(sommets[i] + " ");
-            sommetsTemp[i] = sommets[i] != null?new Graphe.Sommet(sommets[i].getNumero(),sommets[i].getVoisins()):null;
-            if(sommetsTemp[i]!=null){
-                sommetsTemp[i].getVoisins().remove((Object)x);
-            }
-        }
-        System.out.println();
-        sommetsTemp[x] = null;*/
-
-
+        //Suppression du sommet choisis du graphe
         sommets[x].setActive(false);
+
+        //Appel recurcif
         if(nbSommetActif>1)
             sommetColor = coloration(sommets, sommetsInit, nbSommetActif-1);
 
-        if(x == 299){
-            System.out.println("299! " + sommets[796].isActive());
-        }
-
-        if(x == 796)
-            System.out.println("796!");
         sommets[x].setActive(true);
+
+        //Recherche d'une couleur pour le sommet
         int couleur = rechCouleur(sommets[x].getVoisins(), sommetColor);
 
-
+        //Attribution de la couleur trouvée ( si elle existe )
         if(couleur != -1){
             sommetColor[x]=couleur;
             sommets[x].setActive(true);
         }
 
+        // Si pas de couleur trouvée, on cherche une composante connexe
         else{
             sommetColor = inverserCouleur(sommets[x], sommetsInit, sommetColor);
             sommetColor[x] = rechCouleur(sommets[x].getVoisins(), sommetColor);
@@ -144,6 +82,7 @@ public class main {
         return sommetColor;
     }
 
+    //Renvois la plus petite couleur attribuable à un sommet ( par rapport à la couleur de ses voisins )
     public static int rechCouleur(ArrayList<Integer> voisins,  Integer[] sommetColor) {
         boolean [] color = new boolean[5];
         for (int j=0; j<5; j++){
@@ -163,6 +102,7 @@ public class main {
 
     }
 
+    //Recherche d'une composante connexe et inversion des couleurs afin de liberer une couleur pour le sommet x
     public static Integer [] inverserCouleur(Sommet x, Sommet[] sommets, Integer[] sommetColor) {
         Sommet premier=null;
         for(int som : x.getVoisins()){
@@ -205,23 +145,27 @@ public class main {
         boolean boucle = false;
         ArrayList<Integer> sommetsBoucle = new ArrayList<Integer>();
 
+        //Parcours du graphe
         while (!parcours.isEmpty()) {
             boucle = false;
             int sActu = parcours.get(0);
+
+            //Si on trouve un voisin d'une des deux couleurs, on l'ajoute à la composante connexe
             for (int sVoisin : sommets[sActu].getVoisins()) {
                 if (sVoisin != x.getNumero() && (sommets[sVoisin].isActive()) && (sommetColor[sVoisin] == couleurPremier || sommetColor[sVoisin] == couleurSecond) && visite[sVoisin] == false && (sVoisin != premier.getNumero()) && !compConnexe.contains(sVoisin)) {
                     parcours.add(sVoisin);
                     compConnexe.add(sVoisin);
                     visite[sVoisin]=true;
+                    //Si le sommets ramène au sommet d'origine, on l'ajoute à la liste sommetBoucle afin de chercher une autre composante connexe
                     if (voisinsX.contains(sVoisin) || sommetsBoucle.contains(sVoisin)) {
                         boucle = true;
-                        //sommetsBoucle.add(sVoisin);
                         sommetsBoucle.add(second.getNumero());
                     }
                 }
 
             }
             parcours.remove(0);
+            //Recherche d'un nouveau depart pour la composante connèxe en cas de retour sur le sommet d'origine
             if (boucle) {
                 parcours.clear();
                 compConnexe.clear();
@@ -265,60 +209,63 @@ public class main {
 
         }
 
-        System.out.println("++++++++ " + x.getNumero() + " ++++++++");
+        //Si la compossante connexe ne contient qu'un seul sommet, on change ça couleur
         if(compConnexe.size() == 1){
-            System.out.print("Unique : ");
-            System.out.print(compConnexe.get(0) + " Ancienne couleur : " + sommetColor[compConnexe.get(0)]);
             sommetColor[compConnexe.get(0)] = (sommetColor[compConnexe.get(0)]+1) % 5;
-
-            System.out.print(" Nouvelle couleur : " + sommetColor[compConnexe.get(0)]);
-            System.out.print(" | ");
-            for(int sv : sommets[compConnexe.get(0)].getVoisins()){
-                if(sommets[sv].isActive())
-                    System.out.print(" " + sv);
-            }
-            System.out.println();
         }
+
+        //Sinon, on inverse les couleurs de chaque sommets de la composante connexe
         else{
             for (int sommet : compConnexe) {
 
-                System.out.print(sommet + " Ancienne couleur : " + sommetColor[sommet]);
                 if (sommetColor[sommet] == couleurPremier) {
                     sommetColor[sommet] = couleurSecond;
-                    System.out.print(" Nouvelle couleur : " + couleurSecond);
                 } else {
                     sommetColor[sommet] = couleurPremier;
-                    System.out.print(" Nouvelle couleur : " + couleurPremier);
                 }
-                System.out.println();
 
             }
         }
 
-        System.out.println("++++++++++++++++++++++");
 
         return sommetColor;
     }
-    /*public static Integer[] autreCouleur(ArrayList<Integer> voisins, Integer[] sommetColor, Graphe.Sommet[] sommets ){
 
-
-        for(int i : voisins) {
-            boolean [] color = new boolean[5];
-            for (int j=0; j<5; j++){
-                color[j]=true;
-            }
-            for(int j : sommets[i].getVoisins()){
-                if(sommetColor[j] != -1)
-                    color[sommetColor[j]]=false;
-            }
-            color[sommetColor[i]]=false;
-            for(int k =0; k<5; k++) {
-                if (color[k] == true) {
-                    sommetColor[i] = k;
-                    return sommetColor;
-                }
+    public static void traitementArgs(String[] args){
+        Sommet[] sl = null;
+        boolean fileNotFound = false;
+        if(args.length == 1){
+            try {
+                sl = IOGraphe.read(args[0]);
+            } catch (FileNotFoundException e) {
+                fileNotFound = true;
             }
         }
-        return null;
-    }*/
+        else if(args.length == 2){
+            try {
+                sl = IOGraphe.read(args[0], args[1]);
+            } catch (FileNotFoundException e) {
+                fileNotFound = true;
+            }
+        }
+        else{
+            System.out.println("Utilisation : java -jar 5coloration.jar fichierGraphe [fichierPosition]");
+            return;
+        }
+
+        if(fileNotFound){
+            System.out.println("Erreur : Chemin de fichier invalide");
+            return;
+        }
+        else{
+            Integer[] color =  coloration(sl, sl, sl.length);
+            for(int i=0; i<sl.length; i++){
+                System.out.println(i + " : " + color[i]);
+            }
+
+            Fenetre fen;
+            if(args.length == 2)
+                fen = new Fenetre(sl, color);
+        }
+    }
 }

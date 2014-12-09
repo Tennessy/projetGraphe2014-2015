@@ -1,11 +1,9 @@
 package view;
 
-import Graphe.Sommet;
+import graphe.Sommet;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
 import java.awt.geom.Ellipse2D;
 
 /**
@@ -24,24 +22,19 @@ public class Canvas extends JPanel{
     }
 
 
-
+    //Affichage des sommets par rapport aux position du fichier passé en paramètre du programme
     @Override
     public void paintComponent(Graphics g) {
         int sizeX = (this.getWidth()-40);
         int sizeY = (this.getHeight()-40);
         int propX = Math.max(sizeX / this.sommets.length, 1);
         int propY = Math.max(sizeY / this.sommets.length, 1);
-        this.maxX = this.sommets.length*propX;
-        this.maxY = this.sommets.length*propY;
         this.setPreferredSize(new Dimension(propX*this.sommets.length + 40, propY*this.sommets.length + 40));
 
-        System.out.println("SizeX : " + sizeX + " " + "sizeY : "  + sizeY);
-        System.out.println("PropX : " + propX + " PropY : " + propY);
 
         super.paintComponents(g);
         Graphics2D g2d = (Graphics2D) g;
         for(Sommet s : sommets){
-            //System.out.println("Affichage : " + s.getNumero() + " " + s.getPosx() + " " + s.getPosy());
             g2d.setColor(COLOR[colors[s.getNumero()]]);
             Ellipse2D.Double circle = new Ellipse2D.Double((s.getPosx()*propX), (s.getPosy()*propY), 10, 10);
             g2d.drawString(String.valueOf(s.getNumero()), (s.getPosx()*propX), (s.getPosy()*propY));

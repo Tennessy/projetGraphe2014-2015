@@ -1,4 +1,4 @@
-package Graphe;
+package graphe;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -11,6 +11,7 @@ import java.util.ArrayList;
  */
 public class IOGraphe {
 
+    //Lecture du graphe ( sommets + voisins )
     public static Sommet[] read(String path) throws FileNotFoundException {
         Sommet[] as = null;
         BufferedReader br = new BufferedReader(new FileReader(path));
@@ -41,6 +42,7 @@ public class IOGraphe {
         return as;
     }
 
+    //Lecture du graphe ( sommets + voisins ) + lecture des coordonnées des sommets
     public static Sommet[] read(String pathSommet, String pathPos) throws FileNotFoundException {
         Sommet[] sommets = IOGraphe.read(pathSommet);
         BufferedReader br = new BufferedReader(new FileReader(pathPos));
@@ -80,7 +82,6 @@ public class IOGraphe {
     private static int[] parseLinePos(String line){
         int[] a = new int[2];
         String[] splits = line.substring(2, line.length()-1).split(",");
-        System.out.println("Splits : " + splits[0] + " " + splits[1]);
         int i=0;
         for(String s : splits){
             s = s.replaceAll("\\s","");
